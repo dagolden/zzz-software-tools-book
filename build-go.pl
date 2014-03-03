@@ -3,6 +3,7 @@ use v5.10;
 use strict;
 use warnings;
 use File::Basename qw/fileparse/;
+use File::Spec;
 use File::stat;
 
 unless (@ARGV) {
@@ -14,7 +15,7 @@ for my $arg (@ARGV) {
         _build_go($arg);
     }
     elsif ( -d $arg ) {
-        _build_go($_) for <$arg/*.go>;
+        _build_go($_) for map { File::Spec->canonpath($_) } <$arg/*.go>;
     }
     else {
         warn "unknown: $arg\n";
@@ -23,9 +24,15 @@ for my $arg (@ARGV) {
 
 sub _build_go {
     my $src = shift;
-    warn "unknown: $src" unless -f $src;
+    unless ( -f $src ) {
+        warn "unknown: $src";
+        return;
+    }
+    unless ( -d 'bin' ) {
+        mkdir 'bin';
+    }
     my $bin = "bin/" . fileparse( $src, qr/\.go/ );
-    if ( stat($bin)->mtime > stat($src)->mtime ) {
+    if ( -f $bin && stat($bin)->mtime > stat($src)->mtime ) {
         say "$bin up to date";
     }
     else {
