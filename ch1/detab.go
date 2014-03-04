@@ -44,7 +44,8 @@ func main() {
 	for {
 		r, err := getC(input)
 		if err == io.EOF {
-			return
+			output.Flush()
+			break
 		} else {
 			if r == TAB {
 				// fill in with spaces

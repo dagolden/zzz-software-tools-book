@@ -18,9 +18,10 @@ func main() {
 				output.Flush()
 			}
 		} else if err == io.EOF {
-			return
+			break
 		} else {
 			panic("Error reading from STDIN:" + err.Error())
 		}
 	}
+	output.Flush()
 }
