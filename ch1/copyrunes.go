@@ -14,6 +14,9 @@ func main() {
 			if _, err := output.WriteRune(r); err != nil {
 				panic("Error writing to STDOUT:" + err.Error())
 			}
+			if r == '\n' {
+				output.Flush()
+			}
 		} else if err == io.EOF {
 			return
 		} else {
