@@ -5,9 +5,13 @@ use warnings;
 use File::Basename qw/fileparse/;
 use File::Spec;
 use File::stat;
+use Getopt::Long;
+
+my $verbose;
+GetOptions( "verbose|v" => \$verbose ) or die("Error in command line arguments\n");
 
 unless (@ARGV) {
-    die "Usage: $0 <file|directory> [file|directory] ...\n";
+    @ARGV = <./ch*>;
 }
 
 for my $arg (@ARGV) {
@@ -33,7 +37,7 @@ sub _build_go {
     }
     my $bin = "bin/" . fileparse( $src, qr/\.go/ );
     if ( -f $bin && stat($bin)->mtime > stat($src)->mtime ) {
-        say "$bin up to date";
+        say "$bin up to date" if $verbose;
     }
     else {
         my $cmd = "go build -o $bin $src";
